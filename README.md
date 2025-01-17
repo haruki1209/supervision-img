@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Your Project Name
 
 ## 概要
@@ -12,3 +13,6 @@ Pythonがインストールされていることを確認してください。
 
 ## 必要なパッケージ
 - Tkinter (Python標準ライブラリ) 
+=======
+# supervision-img
+>>>>>>> e18b957c29dac72b0f21ab47e7956d698420eea5
