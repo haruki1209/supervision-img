@@ -1,27 +1,19 @@
-## インストール
+インストール
 Pythonがインストールされていることを確認してください。
 
-### 仮想環境のセットアップ
-1. 仮想環境を作成します。
-   ```bash
-   python -m venv venv
-   ```
+仮想環境のセットアップ
+仮想環境を作成します。
 
-2. 仮想環境をアクティベートします。
-   - Windowsの場合:
-     ```bash
-     venv\Scripts\activate
-     ```
-   - macOS/Linuxの場合:
-     ```bash
-     source venv/bin/activate
-     ```
+python -m venv venv
+仮想環境をアクティベートします。
 
-3. 必要なパッケージをインストールします。
-   ```bash
-   pip install -r requirements.txt
-   ```
+Windowsの場合:
+venv\Scripts\activate
+macOS/Linuxの場合:
+source venv/bin/activate
+必要なパッケージをインストールします。
 
-## 使用方法
-1. `python main.py`を実行します。
-2. ウィンドウにテキストが表示されます。
+pip install -r requirements.txt
+使用方法
+python main.pyを実行します。
+ウィンドウにテキストが表示されます。
