@@ -1,3 +1,5 @@
 tkinter  # GUIアプリケーションを作成するためのライブラリ
-requests==2.31.0  # HTTPリクエストを簡単に扱うためのライブラリ
-rich==13.4.2  # コンソール出力を美しくするためのライブラリ
+transformers==4.30.0
+torch==2.0.0
+sentencepiece==0.1.99
+numpy==1.24.3
