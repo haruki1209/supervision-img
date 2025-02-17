@@ -1,5 +1,6 @@
 # 仮想環境のフォルダ
 venv/
+.env
 
 # Pythonのバイトコード
 __pycache__/
@@ -7,3 +8,17 @@ __pycache__/
 
 # 大きなファイル
 *.lib
+*.dll
+
+# Jupyter Notebookのチェックポイント
+.ipynb_checkpoints/
+
+# その他のIDEやエディタの設定ファイル
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OSの生成するファイル
+.DS_Store
+Thumbs.db
