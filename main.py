@@ -3,8 +3,6 @@ from transformers import BertModel, BertJapaneseTokenizer
 import torch
 from tkinter import ttk  # Combobox用
 
-
-
 class TemplateGenerator:
     def __init__(self):
         self.root = tk.Tk()
@@ -19,6 +17,13 @@ class TemplateGenerator:
         self.company_label = tk.Label(self.template_frame, text="株式会社arma bianca")
         self.company_label.place(x=10, y=10)
         
+        # プレビュー用のラベルを初期化
+        self.preview_frame = tk.Frame(self.root, relief='solid', borderwidth=1)
+        self.preview_frame.pack(padx=20, pady=5, fill='x')
+
+        # 円の数を入力するためのボックス
+        self.create_circle_input()
+
         # 権利表記の種類選択
         self.create_rights_selection()
         
@@ -30,6 +35,18 @@ class TemplateGenerator:
         
         # プレビューと保存ボタン
         self.create_buttons()
+
+        # 円の数を保持する変数
+        self.circle_count = 0
+
+    def create_circle_input(self):
+        input_frame = tk.Frame(self.root)
+        input_frame.pack(pady=10)
+
+        tk.Label(input_frame, text="円の数 (1-10):").pack(side='left', padx=5)
+        self.circle_count_var = tk.StringVar()
+        self.circle_count_entry = tk.Entry(input_frame, textvariable=self.circle_count_var, width=5)
+        self.circle_count_entry.pack(side='left', padx=5)
 
     def create_rights_selection(self):
         rights_frame = tk.LabelFrame(self.root, text="権利表記の種類")
@@ -70,16 +87,6 @@ class TemplateGenerator:
                       text="全○種+特典2種", 
                       variable=self.bonus2_var,
                       command=self.update_preview).pack(side='left', padx=10)
-        
-        # プレビュー用のラベル
-        self.preview_frame = tk.Frame(self.root, relief='solid', borderwidth=1)
-        self.preview_frame.pack(padx=20, pady=5, fill='x')
-        
-        self.preview_labels = {
-            'single': tk.Label(self.preview_frame, text="単品売りです", fg='#00FFFF'),
-            'bonus1': tk.Label(self.preview_frame, text="全○種+特典1種", fg='#FF69B4'),
-            'bonus2': tk.Label(self.preview_frame, text="全○種+特典2種", fg='#FF69B4')
-        }
 
     def update_preview(self):
         # すべてのラベルを非表示にする
@@ -95,15 +102,13 @@ class TemplateGenerator:
             self.preview_labels['bonus2'].pack(side='left', padx=10)
 
     def create_input_fields(self):
-        # 入力フィールド（必要なフィールドのみ）
         fields = [
-            ("作品名", "work_name"),
-            ("商品名", "product_name"),
-            ("サイズ", "size"),
-            ("権利表記/コピーライト", "rights_text"),
-            ("使用素材", "materials"),
-            ("BOX購入特典", "box_bonus"),
-            ("AMNIBUS限定特典", "amnibus_bonus")
+            ("作品名:", "work_name"),
+            ("商品名:", "product_name"),
+            ("権利表記:", "rights_text"),
+            ("使用素材:", "materials"),
+            ("サイズ:", "size"),
+            ("BOX購入特典:", "box_bonus"),
         ]
         
         self.entries = {}
@@ -155,59 +160,53 @@ class TemplateGenerator:
         product_label = tk.Label(title_frame, text=f'商品名: {self.entries["product_name"].get()}')
         product_label.pack(side='left', padx=5)
         
-        # 選択された表示オプションを配置
-        x_pos = 300
-        if self.bonus1_var.get():
-            tk.Label(main_frame, text="全○種+特典1種", fg='#FF69B4').place(x=x_pos, y=40)
-            x_pos += 100
-            
-        if self.bonus2_var.get():
-            tk.Label(main_frame, text="全○種+特典2種", fg='#FF69B4').place(x=x_pos, y=40)
-            x_pos += 100
-            
-        if self.single_item_var.get():
-            tk.Label(main_frame, text="単品売りです", fg='#00FFFF').place(x=x_pos, y=40)
+        # 円を描画
+        self.draw_circles_in_preview(main_frame)
 
         # 権利表記の種類に応じて表示位置を変更
-        if self.rights_type.get() == "copyright":
-            # コピーライトの場合
-            # 使用素材とサイズを上部に配置
-            info_frame_top = tk.Frame(main_frame)
-            info_frame_top.place(x=10, y=120)
-            tk.Label(info_frame_top, 
-                    text=f'■使用素材: {self.entries["materials"].get()}').pack(side='left', padx=(0,20))
-            tk.Label(info_frame_top, 
-                    text=f'■サイズ:(約){self.entries["size"].get()}').pack(side='left')
-            
-            # コピーライトを下部に配置
-            info_frame_bottom = tk.Frame(main_frame)
-            info_frame_bottom.place(x=10, y=150)
-            tk.Label(info_frame_bottom, 
-                    text=f'■コピーライト: {self.entries["rights_text"].get()}').pack(anchor='w')
-        else:
-            # 権利表記 確認用の場合
-            # 権利表記と使用素材を上部に配置
-            info_frame_top = tk.Frame(main_frame)
-            info_frame_top.place(x=10, y=120)
-            tk.Label(info_frame_top, 
-                    text=f'■権利表記 確認用🄫 {self.entries["rights_text"].get()}').pack(side='left', padx=(0,20))
-            tk.Label(info_frame_top, 
-                    text=f'■使用素材: {self.entries["materials"].get()}').pack(side='left')
-            
-            # サイズを下部に配置
-            info_frame_bottom = tk.Frame(main_frame)
-            info_frame_bottom.place(x=10, y=150)
-            tk.Label(info_frame_bottom, 
-                    text=f'■サイズ:(約){self.entries["size"].get()}').pack(anchor='w')
+        rights_text = self.entries["rights_text"].get()
+        materials_text = self.entries["materials"].get()
+        size_text = self.entries["size"].get()
+
+        info_frame_top = tk.Frame(main_frame)
+        info_frame_top.place(x=10, y=120)
+        
+        tk.Label(info_frame_top, text=f'■権利表記: {rights_text}').pack(side='left', padx=(0,20))
+        tk.Label(info_frame_top, text=f'■使用素材: {materials_text}').pack(side='left')
+        tk.Label(info_frame_top, text=f'■サイズ:(約){size_text}').pack(side='left')
 
         # BOX購入特典をより下に配置
         if self.entries["box_bonus"].get():
             bonus_y = 400  # y座標を400に変更
-            tk.Label(main_frame, 
-                    text="【BOX購入特典】", 
-                    fg='#FF69B4').place(x=10, y=bonus_y)
-            tk.Label(main_frame, 
-                    text=self.entries["box_bonus"].get()).place(x=10, y=bonus_y+25)
+            tk.Label(main_frame, text="【BOX購入特典】", fg='#FF69B4').place(x=10, y=bonus_y)
+            tk.Label(main_frame, text=self.entries["box_bonus"].get()).place(x=10, y=bonus_y+25)
+
+    def draw_circles_in_preview(self, main_frame):
+        # 円の数を取得
+        try:
+            self.circle_count = int(self.circle_count_var.get())
+        except ValueError:
+            self.circle_count = 0
+
+        # 円のパラメータ
+        radius = 30
+        spacing = 20
+        max_columns = 5  # 最大列数
+        max_rows = 2     # 最大行数
+        canvas_width = (radius * 2 + spacing) * max_columns  # キャンバスの幅
+        canvas_height = (radius * 2 + spacing) * max_rows    # キャンバスの高さ
+
+        # プレビュー用のキャンバスを作成
+        canvas = tk.Canvas(main_frame, width=canvas_width, height=canvas_height)
+        canvas.place(x=10, y=200)
+
+        # 円を描画
+        for i in range(min(self.circle_count, max_columns * max_rows)):
+            x0 = (radius * 2 + spacing) * (i % max_columns) + spacing // 2
+            y0 = (radius * 2 + spacing) * (i // max_columns) + spacing // 2
+            x1 = x0 + radius * 2
+            y1 = y0 + radius * 2
+            canvas.create_oval(x0, y0, x1, y1, outline="black", fill="white")
 
     def save_template(self):
         # テンプレート保存機能（今後実装）
